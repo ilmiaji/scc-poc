@@ -1,0 +1,33 @@
+
+using Google.Api.Gax;
+using Google.Apis.Bigquery.v2.Data;
+using Google.Cloud.BigQuery.V2;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public class BigQueryBrowseTable
+{
+    public void BrowseTable(
+        string projectId = "your-project-id"
+    )
+    {
+        BigQueryClient client = BigQueryClient.Create(projectId);
+        TableReference tableReference = new TableReference()
+        {
+            TableId = "shakespeare",
+            DatasetId = "samples",
+            ProjectId = "bigquery-public-data"
+        };
+        // Load all rows from a table
+        PagedEnumerable<TableDataList, BigQueryRow> result = client.ListRows(
+            tableReference: tableReference,
+            schema: null
+        );
+        // Print the first 10 rows
+        foreach (BigQueryRow row in result.Take(10))
+        {
+            Console.WriteLine($"{row["corpus"]}: {row["word_count"]}");
+        }
+    }
+}
